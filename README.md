@@ -1,0 +1,89 @@
+# TabNeat 🎨📋
+
+**Smart Tab Organization Chrome Extension**
+
+TabNeat은 크롬 브라우저의 탭을 스마트하게 정리하고 그룹핑하는 확장프로그램입니다. 각 사이트의 favicon 색상을 자동으로 추출하여 최적의 색상으로 탭 그룹을 꾸며줍니다.
+
+## 주요 기능 ✨
+
+### 🔄 스마트 탭 정렬
+- 웹사이트별 자동 그룹핑
+- 도메인 기반 탭 조직화
+- 사용자 정의 정렬 규칙
+
+### 🎨 지능형 색상 추출
+- **Favicon 색상 분석**: 각 사이트의 favicon에서 주요 색상을 추출
+- **최적 색상 선택**: 추출된 색상 중 가장 적합한 색상을 자동 선택
+- **탭 그룹 색상 적용**: 선택된 색상을 탭 그룹에 자동 적용하여 시각적 구분
+
+### 📱 사용자 친화적 인터페이스
+- 직관적인 팝업 UI
+- 간편한 원클릭 정리
+- 사용자 설정 옵션
+
+## 설치 방법 📥
+
+1. Chrome 브라우저에서 `chrome://extensions/` 페이지로 이동
+2. 오른쪽 상단의 "개발자 모드" 활성화
+3. "압축해제된 확장 프로그램을 로드합니다" 클릭
+4. 이 프로젝트 폴더 선택
+
+## 사용 방법 🚀
+
+1. 확장프로그램 아이콘 클릭
+2. "탭 정리" 버튼 클릭으로 자동 그룹핑
+3. 설정에서 개인화 옵션 조정
+
+## 기술 스택 🛠️
+
+- **JavaScript**: 메인 로직 구현
+- **Chrome Extension API**: 브라우저 확장 기능
+- **HTML/CSS**: 사용자 인터페이스
+- **Canvas API**: 이미지 색상 분석
+
+## 파일 구조 📂
+
+```
+tabneat/
+├── manifest.json          # 확장프로그램 설정
+├── background.js          # 백그라운드 스크립트
+├── popup.html            # 팝업 UI
+├── popup.js              # 팝업 로직
+├── options.html          # 설정 페이지
+├── options.js            # 설정 로직
+├── offscreen.html        # 오프스크린 문서
+├── offscreen.js          # 색상 추출 로직
+└── icons/               # 확장프로그램 아이콘들
+```
+
+## 주요 알고리즘 🧠
+
+### 색상 추출 프로세스
+1. **Favicon 로드**: 각 탭의 favicon 이미지 획득
+2. **Canvas 분석**: 이미지를 canvas에 그려 픽셀 데이터 추출
+3. **색상 클러스터링**: 주요 색상들을 그룹화하여 대표 색상 선별
+4. **최적 색상 선택**: 명도, 채도, 대비를 고려한 최적 색상 결정
+5. **그룹 색상 적용**: Chrome Tab Groups API를 통해 색상 적용
+
+## 기여하기 🤝
+
+1. 이 저장소를 Fork합니다
+2. 새로운 기능 브랜치를 생성합니다 (`git checkout -b feature/amazing-feature`)
+3. 변경사항을 커밋합니다 (`git commit -m 'Add amazing feature'`)
+4. 브랜치에 Push합니다 (`git push origin feature/amazing-feature`)
+5. Pull Request를 생성합니다
+
+## 라이선스 📄
+
+이 프로젝트는 MIT 라이선스 하에 있습니다.
+
+## 버전 히스토리 📋
+
+- **v1.0.0**: 초기 릴리즈
+  - 기본 탭 그룹핑 기능
+  - Favicon 색상 추출 및 적용
+  - 사용자 설정 옵션
+
+---
+
+**TabNeat** - Making your browser tabs as organized as your thoughts! 🎯
