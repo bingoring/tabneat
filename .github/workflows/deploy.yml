@@ -43,6 +43,19 @@ jobs:
         zip -r ../extension.zip .
         cd ..
 
+    - name: Check secrets (debug)
+      run: |
+        echo "Checking if secrets exist..."
+        echo "EXTENSION_ID length: ${#EXTENSION_ID}"
+        echo "CLIENT_ID length: ${#CLIENT_ID}"
+        echo "CLIENT_SECRET length: ${#CLIENT_SECRET}"
+        echo "REFRESH_TOKEN length: ${#REFRESH_TOKEN}"
+      env:
+        EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+
     - name: Upload to Chrome Web Store
       env:
         EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
@@ -50,12 +63,17 @@ jobs:
         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
       run: |
+        if [ -z "$EXTENSION_ID" ] || [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$REFRESH_TOKEN" ]; then
+          echo "Error: One or more secrets are missing or empty"
+          exit 1
+        fi
+
         chrome-webstore-upload upload \
           --source extension.zip \
-          --extension-id $EXTENSION_ID \
-          --client-id $CLIENT_ID \
-          --client-secret $CLIENT_SECRET \
-          --refresh-token $REFRESH_TOKEN \
+          --extension-id "$EXTENSION_ID" \
+          --client-id "$CLIENT_ID" \
+          --client-secret "$CLIENT_SECRET" \
+          --refresh-token "$REFRESH_TOKEN" \
           --auto-publish
 
     - name: Cleanup
