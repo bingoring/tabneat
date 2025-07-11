@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "TabNeat",
+  "version": "1.2.1",
+  "description": "Automatically sorts and groups your tabs by domain for a cleaner browser experience",
+  "permissions": [
+    "offscreen",
+    "tabs",
+    "storage",
+    "tabGroups",
+    "system.display"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Sort & Group tabs by domain",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png",
+      "64": "icon-64.png",
+      "128": "icon-128.png"
+    }
+  },
+  "options_page": "options.html",
+  "host_permissions": [
+      "https://www.google.com/*"
+  ],
+  "commands": {
+    "resize-left": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Left"
+      },
+      "description": "Move window to the left"
+    },
+    "resize-right": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Right"
+      },
+      "description": "Move window to the right"
+    },
+    "resize-up": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Up"
+      },
+      "description": "Move window to the top"
+    },
+    "resize-down": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Down"
+      },
+      "description": "Move window to the bottom"
+    }
+  }
+}

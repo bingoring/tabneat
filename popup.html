@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>탭 그룹 설정</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            width: 200px;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f4f4f4;
+            border-radius: 5px;
+        }
+        .toggle-label {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h3>탭 정리 설정</h3>
+    <div class="toggle-container">
+        <span class="toggle-label">도메인별 탭 그룹화</span>
+        <input type="checkbox" id="groupTabsToggle">
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
