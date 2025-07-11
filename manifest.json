@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TabNeat",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Automatically sorts and groups your tabs by domain for a cleaner browser experience",
   "permissions": [
     "offscreen",

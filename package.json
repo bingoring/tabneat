@@ -1,6 +1,6 @@
 {
   "name": "tabneat",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Smart Tab Organization Chrome Extension - Automatically sorts and groups your tabs by domain for a cleaner browser experience",
   "main": "background.js",
   "scripts": {
