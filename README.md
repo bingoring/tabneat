@@ -69,6 +69,11 @@ tabneat/
 ├── offscreen.html        # 오프스크린 문서
 ├── offscreen.js          # 색상 추출 로직
 └── icons/               # 확장프로그램 아이콘들
+    ├── icon-16.png      # 16x16 아이콘
+    ├── icon-32.png      # 32x32 아이콘
+    ├── icon-64.png      # 64x64 아이콘
+    ├── icon-128.png     # 128x128 아이콘
+    └── icon-*-1.png     # 아이콘 바리에이션들
 ```
 
 ## 주요 알고리즘 🧠
