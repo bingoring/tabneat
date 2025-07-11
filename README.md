@@ -85,6 +85,29 @@ tabneat/
 4. **최적 색상 선택**: 명도, 채도, 대비를 고려한 최적 색상 결정
 5. **그룹 색상 적용**: Chrome Tab Groups API를 통해 색상 적용
 
+## 자동 배포 🚀
+
+이 프로젝트는 **GitHub Actions**를 통해 자동 배포가 설정되어 있습니다.
+
+### 배포 프로세스
+- `main` 브랜치에 푸시하면 자동으로 Chrome Web Store에 배포됩니다
+- 모든 파일을 자동으로 패키징하고 업로드합니다
+- 배포 후 자동으로 게시됩니다
+
+### 필요한 설정
+GitHub Repository의 **Settings > Secrets and variables > Actions**에서 다음 secrets를 설정해야 합니다:
+
+- `EXTENSION_ID`: Chrome Web Store 확장프로그램 ID
+- `CLIENT_ID`: Google API 클라이언트 ID
+- `CLIENT_SECRET`: Google API 클라이언트 시크릿
+- `REFRESH_TOKEN`: OAuth 2.0 리프레시 토큰
+
+### 수동 배포
+```bash
+npm run build    # 확장프로그램 패키징
+npm run deploy   # Chrome Web Store에 배포
+```
+
 ## 기여하기 🤝
 
 1. 이 저장소를 Fork합니다

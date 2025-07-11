@@ -1,0 +1,63 @@
+name: Deploy to Chrome Web Store
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: |
+        npm install -g chrome-webstore-upload-cli
+
+    - name: Create extension package
+      run: |
+        # Create a temporary directory for the extension
+        mkdir extension-build
+
+        # Copy all necessary files except .git and .github
+        cp -r icons extension-build/
+        cp manifest.json extension-build/
+        cp background.js extension-build/
+        cp popup.html extension-build/
+        cp popup.js extension-build/
+        cp options.html extension-build/
+        cp options.js extension-build/
+        cp offscreen.html extension-build/
+        cp offscreen.js extension-build/
+
+        # Create zip file
+        cd extension-build
+        zip -r ../extension.zip .
+        cd ..
+
+    - name: Upload to Chrome Web Store
+      env:
+        EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+      run: |
+        chrome-webstore-upload upload \
+          --source extension.zip \
+          --extension-id $EXTENSION_ID \
+          --client-id $CLIENT_ID \
+          --client-secret $CLIENT_SECRET \
+          --refresh-token $REFRESH_TOKEN \
+          --auto-publish
+
+    - name: Cleanup
+      run: |
+        rm -rf extension-build extension.zip

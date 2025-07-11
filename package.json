@@ -1,0 +1,30 @@
+{
+  "name": "tabneat",
+  "version": "1.2.1",
+  "description": "Smart Tab Organization Chrome Extension - Automatically sorts and groups your tabs by domain for a cleaner browser experience",
+  "main": "background.js",
+  "scripts": {
+    "build": "npm run package",
+    "package": "zip -r tabneat.zip . -x '*.git*' '*.github*' 'node_modules/*' 'package*.json' 'README.md' '*.DS_Store'",
+    "deploy": "chrome-webstore-upload upload --source tabneat.zip --extension-id $EXTENSION_ID --client-id $CLIENT_ID --client-secret $CLIENT_SECRET --refresh-token $REFRESH_TOKEN --auto-publish"
+  },
+  "keywords": [
+    "chrome-extension",
+    "tabs",
+    "organization",
+    "productivity",
+    "browser",
+    "favicon",
+    "color-extraction"
+  ],
+  "author": "bingoring",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bingoring/tabneat.git"
+  },
+  "homepage": "https://github.com/bingoring/tabneat",
+  "devDependencies": {
+    "chrome-webstore-upload-cli": "^3.0.0"
+  }
+}
