@@ -4,6 +4,14 @@
 
 TabNeat은 크롬 브라우저의 탭을 스마트하게 정리하고 그룹핑하는 확장프로그램입니다. 각 사이트의 favicon 색상을 자동으로 추출하여 최적의 색상으로 탭 그룹을 꾸며줍니다.
 
+## 다운로드 📦
+
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/mmcddpjlkgbflhcfchenbjebkbhhfepa?style=for-the-badge&logo=googlechrome&logoColor=white&label=CHROME%20WEB%20STORE)](https://chromewebstore.google.com/detail/tabneat/mmcddpjlkgbflhcfchenbjebkbhhfepa)
+
+**👆 Chrome Web Store에서 바로 설치하기**
+
+🔗 **직접 링크**: [https://chromewebstore.google.com/detail/tabneat/mmcddpjlkgbflhcfchenbjebkbhhfepa](https://chromewebstore.google.com/detail/tabneat/mmcddpjlkgbflhcfchenbjebkbhhfepa)
+
 ## 주요 기능 ✨
 
 ### 🔄 스마트 탭 정렬
@@ -23,6 +31,13 @@ TabNeat은 크롬 브라우저의 탭을 스마트하게 정리하고 그룹핑�
 
 ## 설치 방법 📥
 
+### 🌟 권장 방법: Chrome Web Store에서 설치
+1. [Chrome Web Store 링크](https://chromewebstore.google.com/detail/tabneat/mmcddpjlkgbflhcfchenbjebkbhhfepa)를 클릭
+2. "Chrome에 추가" 버튼 클릭
+3. 확장프로그램 권한 승인
+4. 설치 완료! 🎉
+
+### 🔧 개발자 모드로 설치 (개발자용)
 1. Chrome 브라우저에서 `chrome://extensions/` 페이지로 이동
 2. 오른쪽 상단의 "개발자 모드" 활성화
 3. "압축해제된 확장 프로그램을 로드합니다" 클릭
