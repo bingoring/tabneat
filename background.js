@@ -161,14 +161,115 @@ async function ensureOffscreenDocument() {
   }
 }
 
+// 도메인별 기본 색상 반환 함수
+function getDefaultColorForDomain(domain) {
+  const defaultColors = {
+    // 구글 서비스
+    'google': 'blue', 'google.com': 'blue', 'gmail': 'red', 'gmail.com': 'red',
+    'youtube': 'red', 'youtube.com': 'red', 'drive': 'yellow', 'drive.google.com': 'yellow',
+    'docs': 'blue', 'docs.google.com': 'blue', 'sheets': 'green', 'sheets.google.com': 'green',
+    'slides': 'yellow', 'slides.google.com': 'yellow',
+
+    // 소셜 미디어
+    'facebook': 'blue', 'facebook.com': 'blue', 'twitter': 'blue', 'twitter.com': 'blue',
+    'instagram': 'purple', 'instagram.com': 'purple', 'linkedin': 'blue', 'linkedin.com': 'blue',
+    'tiktok': 'red', 'tiktok.com': 'red', 'snapchat': 'yellow', 'snapchat.com': 'yellow',
+    'discord': 'purple', 'discord.com': 'purple', 'telegram': 'blue', 'telegram.org': 'blue',
+    'whatsapp': 'green', 'whatsapp.com': 'green',
+
+    // 개발/기술
+    'github': 'grey', 'github.com': 'grey', 'stackoverflow': 'orange', 'stackoverflow.com': 'orange',
+    'codepen': 'grey', 'codepen.io': 'grey', 'jsfiddle': 'blue', 'jsfiddle.net': 'blue',
+    'replit': 'orange', 'replit.com': 'orange', 'vercel': 'grey', 'vercel.com': 'grey',
+    'netlify': 'cyan', 'netlify.com': 'cyan', 'heroku': 'purple', 'heroku.com': 'purple',
+
+    // 한국 사이트
+    'naver': 'green', 'naver.com': 'green', 'daum': 'orange', 'daum.net': 'orange',
+    'kakao': 'yellow', 'kakao.com': 'yellow', 'coupang': 'red', 'coupang.com': 'red',
+    'baemin': 'cyan', 'baemin.com': 'cyan', 'yogiyo': 'red', 'yogiyo.co.kr': 'red',
+    'toss': 'blue', 'toss.im': 'blue', 'kakaopay': 'yellow', 'kakaopay.com': 'yellow',
+    '11st': 'red', '11st.co.kr': 'red', 'gmarket': 'red', 'gmarket.co.kr': 'red',
+    'interpark': 'blue', 'interpark.com': 'blue',
+
+    // 쇼핑/이커머스
+    'amazon': 'orange', 'amazon.com': 'orange', 'ebay': 'yellow', 'ebay.com': 'yellow',
+    'aliexpress': 'orange', 'aliexpress.com': 'orange', 'shopify': 'green', 'shopify.com': 'green',
+    'etsy': 'orange', 'etsy.com': 'orange',
+
+    // 엔터테인먼트
+    'netflix': 'red', 'netflix.com': 'red', 'spotify': 'green', 'spotify.com': 'green',
+    'apple': 'grey', 'apple.com': 'grey', 'microsoft': 'blue', 'microsoft.com': 'blue',
+    'steam': 'blue', 'steampowered.com': 'blue', 'twitch': 'purple', 'twitch.tv': 'purple',
+
+    // 뉴스/정보
+    'cnn': 'red', 'cnn.com': 'red', 'bbc': 'red', 'bbc.com': 'red', 'reuters': 'orange', 'reuters.com': 'orange',
+    'nytimes': 'grey', 'nytimes.com': 'grey', 'washingtonpost': 'blue', 'washingtonpost.com': 'blue',
+    'guardian': 'blue', 'theguardian.com': 'blue', 'medium': 'grey', 'medium.com': 'grey',
+    'reddit': 'orange', 'reddit.com': 'orange',
+
+    // 기타
+    'paypal': 'blue', 'paypal.com': 'blue', 'stripe': 'purple', 'stripe.com': 'purple',
+    'slack': 'purple', 'slack.com': 'purple', 'zoom': 'blue', 'zoom.us': 'blue',
+    'notion': 'grey', 'notion.so': 'grey', 'trello': 'blue', 'trello.com': 'blue',
+    'asana': 'red', 'asana.com': 'red', 'dropbox': 'blue', 'dropbox.com': 'blue',
+    'onedrive': 'blue', 'onedrive.live.com': 'blue', 'icloud': 'blue', 'icloud.com': 'blue'
+  };
+
+  let defaultColor = defaultColors[domain.toLowerCase()];
+
+  // 도메인에 특정 키워드가 포함된 경우 색상 추정
+  if (!defaultColor) {
+    if (domain.includes('google') || domain.includes('gmail')) defaultColor = 'blue';
+    else if (domain.includes('youtube')) defaultColor = 'red';
+    else if (domain.includes('facebook') || domain.includes('fb')) defaultColor = 'blue';
+    else if (domain.includes('instagram')) defaultColor = 'purple';
+    else if (domain.includes('twitter')) defaultColor = 'blue';
+    else if (domain.includes('github')) defaultColor = 'grey';
+    else if (domain.includes('naver')) defaultColor = 'green';
+    else if (domain.includes('kakao')) defaultColor = 'yellow';
+    else if (domain.includes('amazon')) defaultColor = 'orange';
+    else if (domain.includes('netflix')) defaultColor = 'red';
+    else if (domain.includes('spotify')) defaultColor = 'green';
+    else if (domain.includes('reddit')) defaultColor = 'orange';
+    else if (domain.includes('shop') || domain.includes('store')) defaultColor = 'orange';
+    else if (domain.includes('blog') || domain.includes('news')) defaultColor = 'grey';
+    else if (domain.includes('video') || domain.includes('tv')) defaultColor = 'red';
+    else if (domain.includes('music') || domain.includes('sound')) defaultColor = 'green';
+    else if (domain.includes('game')) defaultColor = 'blue';
+    else if (domain.includes('pay') || domain.includes('bank')) defaultColor = 'blue';
+    else defaultColor = 'grey';
+  }
+
+  return defaultColor;
+}
+
 async function getDominantColor(domain) {
   await ensureOffscreenDocument();
 
   return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      const fallbackColor = getDefaultColorForDomain(domain);
+      console.warn(`Timeout for domain ${domain}, using fallback: ${fallbackColor}`);
+      resolve(fallbackColor);
+    }, 3000); // 3초 타임아웃으로 단축
+
     chrome.runtime.sendMessage({ action: "fetchFavicon", domain }, (response) => {
+      clearTimeout(timeout);
+
+      if (chrome.runtime.lastError) {
+        const fallbackColor = getDefaultColorForDomain(domain);
+        console.error(`Runtime error for ${domain}:`, chrome.runtime.lastError);
+        console.log(`Using fallback color for ${domain}: ${fallbackColor}`);
+        resolve(fallbackColor);
+        return;
+      }
+
       if (!response || !response.color) {
-        resolve("grey");
+        const fallbackColor = getDefaultColorForDomain(domain);
+        console.warn(`No color response for ${domain}, using fallback: ${fallbackColor}`);
+        resolve(fallbackColor);
       } else {
+        console.log(`Got color for ${domain}: ${response.color}`);
         resolve(response.color);
       }
     });
@@ -224,15 +325,33 @@ chrome.action.onClicked.addListener(async () => {
         const groupId = await chrome.tabs.group({ tabIds });
 
         if (groupId) {
-          const [dominantColor] = await Promise.all([
-            getDominantColor(domain),
-            chrome.tabGroups.update(groupId, {
-              title: domain,
-              collapsed: collapseGroups
-            })
-          ]);
+          // 그룹 기본 정보 설정
+          await chrome.tabGroups.update(groupId, {
+            title: domain,
+            collapsed: collapseGroups
+          });
 
-          await chrome.tabGroups.update(groupId, { color: dominantColor });
+          // 색상 추출 및 설정 (빠른 fallback 포함)
+          try {
+            console.log(`Fetching color for domain: ${domain}`);
+
+            // 기본 색상을 먼저 설정 (즉시 시각적 피드백)
+            const fallbackColor = getDefaultColorForDomain(domain);
+            await chrome.tabGroups.update(groupId, { color: fallbackColor });
+            console.log(`Set fallback color for ${domain}: ${fallbackColor}`);
+
+            // 그 다음 favicon 색상 추출 시도 (원래 도메인 사용)
+            const originalDomain = getDomainName(tabArray[0].url);
+            console.log(`Domain for favicon request: ${originalDomain} (clean domain: ${domain})`);
+            const dominantColor = await getDominantColor(originalDomain);
+            if (dominantColor !== fallbackColor) {
+              console.log(`Updating to extracted color for ${domain} (from ${originalDomain}): ${dominantColor}`);
+              await chrome.tabGroups.update(groupId, { color: dominantColor });
+            }
+          } catch (error) {
+            console.error(`Failed to set color for ${domain}:`, error);
+            // 이미 fallback 색상이 설정되어 있으므로 추가 처리 불필요
+          }
         }
       } else {
         console.log(`Adding tabs to existing group ${existingGroupId} for domain: ${domain}, tabs:`, tabIds);
