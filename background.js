@@ -3,6 +3,14 @@ async function getOptions() {
   return data.groupTabs ?? false;
 }
 
+async function getSortOrder() {
+  let data = await chrome.storage.sync.get(["sortOrder", "customDomainOrder"]);
+  return {
+    sortOrder: data.sortOrder ?? "alphabetical",
+    customDomainOrder: data.customDomainOrder ?? []
+  };
+}
+
 async function getExistingGroupId(domain) {
   const groups = await chrome.tabGroups.query({});
   const tabsPromises = groups.map(group =>
@@ -21,6 +29,61 @@ async function getExistingGroupId(domain) {
     }
   }
   return null;
+}
+
+// 도메인 정렬 함수
+function sortDomains(domainMap, sortOrder, customDomainOrder = []) {
+  const domains = Array.from(domainMap.keys());
+
+  switch (sortOrder) {
+    case "alphabetical":
+      return domains.sort();
+
+    case "recent":
+      // 최근 방문순 정렬 (각 도메인의 가장 최근 탭 기준)
+      return domains.sort((a, b) => {
+        const tabsA = domainMap.get(a);
+        const tabsB = domainMap.get(b);
+
+        // 각 도메인에서 가장 최근에 접근한 탭의 시간을 찾기
+        const maxLastAccessedA = Math.max(...tabsA.map(tab => tab.lastAccessed || 0));
+        const maxLastAccessedB = Math.max(...tabsB.map(tab => tab.lastAccessed || 0));
+
+        return maxLastAccessedB - maxLastAccessedA; // 내림차순 (최근이 먼저)
+      });
+
+    case "custom":
+      // 사용자 지정 순서
+      if (customDomainOrder.length === 0) {
+        return domains.sort(); // 사용자 지정 순서가 없으면 알파벳순
+      }
+
+      return domains.sort((a, b) => {
+        const indexA = customDomainOrder.indexOf(a);
+        const indexB = customDomainOrder.indexOf(b);
+
+        // 둘 다 사용자 지정 순서에 있는 경우
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+
+        // A만 사용자 지정 순서에 있는 경우
+        if (indexA !== -1 && indexB === -1) {
+          return -1;
+        }
+
+        // B만 사용자 지정 순서에 있는 경우
+        if (indexA === -1 && indexB !== -1) {
+          return 1;
+        }
+
+        // 둘 다 사용자 지정 순서에 없는 경우 알파벳순
+        return a.localeCompare(b);
+      });
+
+    default:
+      return domains.sort();
+  }
 }
 
 function getDomainName(url) {
@@ -76,10 +139,11 @@ async function getDominantColor(domain) {
 }
 
 chrome.action.onClicked.addListener(async () => {
-  const [tabs, groupTabs, collapseGroups] = await Promise.all([
+  const [tabs, groupTabs, collapseGroups, sortSettings] = await Promise.all([
     chrome.tabs.query({ currentWindow: true }),
     getOptions(),
-    chrome.storage.sync.get("collapseGroups").then(data => data.collapseGroups ?? false)
+    chrome.storage.sync.get("collapseGroups").then(data => data.collapseGroups ?? false),
+    getSortOrder()
   ]);
 
   const domainMap = new Map();
@@ -91,8 +155,9 @@ chrome.action.onClicked.addListener(async () => {
     domainMap.get(domain).push(tab);
   }
 
-  const sortedDomains = Array.from(domainMap.keys()).sort();
-  console.log(sortedDomains)
+  // 사용자 설정에 따른 정렬
+  const sortedDomains = sortDomains(domainMap, sortSettings.sortOrder, sortSettings.customDomainOrder);
+  console.log(`Sorted domains (${sortSettings.sortOrder}):`, sortedDomains);
   let index = 0;
 
   // 🔹 그룹화가 끝난 후 모든 탭 정렬 실행

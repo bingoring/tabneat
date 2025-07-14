@@ -79,6 +79,114 @@
             text-align: center;
             font-size: 12px;
         }
+
+        .option-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .option-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .sort-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sort-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .sort-option:hover {
+            background-color: #f5f5f5;
+        }
+
+        .sort-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .radio-label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .custom-order-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px dashed #ccc;
+        }
+
+        .custom-order-section h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .domain-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .domain-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin: 4px 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: move;
+        }
+
+        .domain-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .domain-name {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .drag-handle {
+            font-size: 12px;
+            color: #999;
+            cursor: grab;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .reset-btn {
+            padding: 6px 12px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .reset-btn:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
@@ -101,7 +209,33 @@
           </label>
       </div>
 
-        <div class="footer">Other options will be added soon...</div>
+        <div class="option-section">
+            <h3>정렬 옵션</h3>
+            <div class="sort-container">
+                <label class="sort-option">
+                    <input type="radio" name="sortOrder" value="alphabetical" id="sortAlphabetical">
+                    <span class="radio-label">🔤 알파벳순 정렬</span>
+                </label>
+                <label class="sort-option">
+                    <input type="radio" name="sortOrder" value="recent" id="sortRecent">
+                    <span class="radio-label">🕒 최근 방문순</span>
+                </label>
+                <label class="sort-option">
+                    <input type="radio" name="sortOrder" value="custom" id="sortCustom">
+                    <span class="radio-label">✋ 사용자 지정 순서</span>
+                </label>
+            </div>
+
+            <div id="customOrderSection" class="custom-order-section" style="display: none;">
+                <h4>도메인 순서 설정</h4>
+                <div id="domainList" class="domain-list">
+                    <!-- 도메인 목록이 여기에 동적으로 추가됩니다 -->
+                </div>
+                <button id="resetCustomOrder" class="reset-btn">기본 순서로 재설정</button>
+            </div>
+        </div>
+
+        <div class="footer">TabNeat - Smart Tab Organization</div>
     </div>
 
     <script src="options.js"></script>
