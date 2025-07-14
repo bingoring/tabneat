@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function loadCurrentDomains() {
       try {
           const tabs = await chrome.tabs.query({ currentWindow: true });
-          const domains = [...new Set(tabs.map(tab => getDomainName(tab.url)))].sort();
+          const domains = [...new Set(tabs.map(tab => getCleanDomainName(tab.url)))].sort();
           loadCustomDomainOrder(domains);
       } catch (error) {
           console.error("Error loading current domains:", error);
@@ -93,6 +93,43 @@ document.addEventListener("DOMContentLoaded", async () => {
       } catch (error) {
           console.error("Invalid URL:", url, error);
           return "unknown";
+      }
+  }
+
+  // TLD를 제거하여 깔끔한 도메인 이름 반환
+  function getCleanDomainName(url) {
+      try {
+          const fullDomain = getDomainName(url);
+
+          // 일반적인 TLD 패턴들을 정규식으로 제거
+          const tldPatterns = [
+              // 복합 TLD (2-part) - 먼저 처리
+              /\.(co|com|org|net|edu|gov|mil|ac|ad)\.(kr|uk|jp|au|nz|za|in|th|sg|my|ph|vn|tw|hk|cn|br|mx|ar|cl|pe|co|ve|ec|bo|py|uy|gf|sr|gy|fk|gs)$/i,
+
+              // 일반적인 단일 TLD
+              /\.(com|org|net|edu|gov|mil|int|arpa|io|ai|tech|dev|app|info|biz|name|mobi|travel|museum|aero|coop|pro|xxx|jobs|cat|post|tel|asia|kr|jp|cn|de|fr|uk|ca|au|in|br|ru|it|es|mx|nl|se|no|dk|fi|pl|tr|gr|pt|cz|hu|ro|bg|hr|si|sk|ee|lv|lt|lu|be|at|ch|li|is|ie|mt|cy|md|mc|ad|sm|va|by|ua|ru|kz|uz|tj|tm|kg|am|az|ge|af|pk|bd|np|bt|lk|mv|mm|kh|la|vn|th|my|sg|id|bn|ph|tw|hk|mo|mn|kp|kr|jp|cn|fm|pw|mh|mp|gu|as|vi|pr|vg|ai|ag|bb|bs|bz|cr|cu|dm|do|gd|gt|ht|hn|jm|kn|ky|lc|ms|ni|pa|sv|tc|tt|vc)$/i
+          ];
+
+          let cleanDomain = fullDomain;
+
+          // 각 패턴을 순서대로 적용
+          for (const pattern of tldPatterns) {
+              const match = cleanDomain.match(pattern);
+              if (match) {
+                  cleanDomain = cleanDomain.replace(pattern, '');
+                  break; // 첫 번째 매치에서 중단
+              }
+          }
+
+          // 빈 문자열이거나 점만 남은 경우 원래 도메인 반환
+          if (!cleanDomain || cleanDomain === '.' || cleanDomain.length === 0) {
+              return fullDomain;
+          }
+
+          return cleanDomain;
+      } catch (error) {
+          console.error("Error cleaning domain name:", url, error);
+          return getDomainName(url);
       }
   }
 

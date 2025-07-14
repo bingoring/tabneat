@@ -22,7 +22,7 @@ async function getExistingGroupId(domain) {
 
   for (const { group, tabs } of results) {
     if (tabs.length > 0) {
-      const groupDomain = getDomainName(tabs[0].url);
+      const groupDomain = getCleanDomainName(tabs[0].url);
       if (groupDomain.toLowerCase() === domain.toLowerCase()) {
         return group.id;
       }
@@ -108,7 +108,44 @@ function getDomainName(url) {
   } catch (error) {
     console.error("Invalid URL:", url, error);
     return "unknown";
-  }16
+  }
+}
+
+// TLD를 제거하여 깔끔한 도메인 이름 반환
+function getCleanDomainName(url) {
+  try {
+    const fullDomain = getDomainName(url);
+
+    // 일반적인 TLD 패턴들을 정규식으로 제거
+    const tldPatterns = [
+      // 복합 TLD (2-part) - 먼저 처리
+      /\.(co|com|org|net|edu|gov|mil|ac|ad)\.(kr|uk|jp|au|nz|za|in|th|sg|my|ph|vn|tw|hk|cn|br|mx|ar|cl|pe|co|ve|ec|bo|py|uy|gf|sr|gy|fk|gs)$/i,
+
+      // 일반적인 단일 TLD
+      /\.(com|org|net|edu|gov|mil|int|arpa|io|ai|tech|dev|app|info|biz|name|mobi|travel|museum|aero|coop|pro|xxx|jobs|cat|post|tel|asia|kr|jp|cn|de|fr|uk|ca|au|in|br|ru|it|es|mx|nl|se|no|dk|fi|pl|tr|gr|pt|cz|hu|ro|bg|hr|si|sk|ee|lv|lt|lu|be|at|ch|li|is|ie|mt|cy|md|mc|ad|sm|va|by|ua|ru|kz|uz|tj|tm|kg|am|az|ge|af|pk|bd|np|bt|lk|mv|mm|kh|la|vn|th|my|sg|id|bn|ph|tw|hk|mo|mn|kp|kr|jp|cn|fm|pw|mh|mp|gu|as|vi|pr|vg|ai|ag|bb|bs|bz|cr|cu|dm|do|gd|gt|ht|hn|jm|kn|ky|lc|ms|ni|pa|sv|tc|tt|vc)$/i
+    ];
+
+    let cleanDomain = fullDomain;
+
+    // 각 패턴을 순서대로 적용
+    for (const pattern of tldPatterns) {
+      const match = cleanDomain.match(pattern);
+      if (match) {
+        cleanDomain = cleanDomain.replace(pattern, '');
+        break; // 첫 번째 매치에서 중단
+      }
+    }
+
+    // 빈 문자열이거나 점만 남은 경우 원래 도메인 반환
+    if (!cleanDomain || cleanDomain === '.' || cleanDomain.length === 0) {
+      return fullDomain;
+    }
+
+    return cleanDomain;
+  } catch (error) {
+    console.error("Error cleaning domain name:", url, error);
+    return getDomainName(url);
+  }
 }
 
 async function ensureOffscreenDocument() {
@@ -148,7 +185,7 @@ chrome.action.onClicked.addListener(async () => {
 
   const domainMap = new Map();
   for (const tab of tabs) {
-    const domain = getDomainName(tab.url);
+    const domain = getCleanDomainName(tab.url);
     if (!domainMap.has(domain)) {
       domainMap.set(domain, []);
     }
