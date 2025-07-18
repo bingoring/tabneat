@@ -77,15 +77,17 @@ async function applyThemeImmediately() {
     document.body.style.setProperty('background', backgroundColor, 'important');
     document.body.style.setProperty('color', textColor, 'important');
 
-    // 검색창 관련 기본 변수 설정
+        // 검색창 관련 기본 변수 설정
     const cardBg = isDarkTheme ? '#3c4043' : 'rgba(255, 255, 255, 0.95)';
     const secondaryText = isDarkTheme ? 'rgba(232, 234, 237, 0.7)' : 'rgba(60, 64, 67, 0.7)';
+    const iconBg = isDarkTheme ? '#2d2d30' : '#f0f0f0';
 
     root.style.setProperty('--theme-card-background', cardBg);
     root.style.setProperty('--theme-input-bg', cardBg);
     root.style.setProperty('--theme-input-text', textColor);
     root.style.setProperty('--theme-input-placeholder', secondaryText);
     root.style.setProperty('--theme-secondary-text', secondaryText);
+    root.style.setProperty('--theme-icon-background', iconBg);
 
     // 스크롤바 색상 설정
     const scrollThumb = isDarkTheme ? 'rgba(232, 234, 237, 0.2)' : 'rgba(60, 64, 67, 0.2)';
@@ -119,6 +121,7 @@ function applySystemTheme() {
     root.style.setProperty('--theme-input-text', '#e8eaed');
     root.style.setProperty('--theme-input-placeholder', 'rgba(232, 234, 237, 0.7)');
     root.style.setProperty('--theme-secondary-text', 'rgba(232, 234, 237, 0.7)');
+    root.style.setProperty('--theme-icon-background', '#2d2d30');
     root.style.setProperty('--theme-scrollbar-thumb', 'rgba(232, 234, 237, 0.2)');
     root.style.setProperty('--theme-scrollbar-thumb-hover', 'rgba(232, 234, 237, 0.3)');
 
@@ -134,6 +137,7 @@ function applySystemTheme() {
     root.style.setProperty('--theme-input-text', '#333333');
     root.style.setProperty('--theme-input-placeholder', 'rgba(60, 64, 67, 0.7)');
     root.style.setProperty('--theme-secondary-text', 'rgba(60, 64, 67, 0.7)');
+    root.style.setProperty('--theme-icon-background', '#f0f0f0');
     root.style.setProperty('--theme-scrollbar-thumb', 'rgba(60, 64, 67, 0.2)');
     root.style.setProperty('--theme-scrollbar-thumb-hover', 'rgba(60, 64, 67, 0.3)');
 
@@ -1412,10 +1416,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           root.style.setProperty('--theme-hover', hoverColor);
           root.style.setProperty('--theme-is-dark', isDarkTheme ? '1' : '0');
 
-          // 검색창 관련 CSS 변수 설정
+                    // 검색창 관련 CSS 변수 설정
           root.style.setProperty('--theme-input-bg', cardBackground);
           root.style.setProperty('--theme-input-text', textColor);
           root.style.setProperty('--theme-input-placeholder', secondaryTextColor);
+
+          // 아이콘 배경 색상 설정
+          const iconBackground = isDarkTheme ?
+            adjustBrightness(backgroundColor, 20) :
+            adjustBrightness(backgroundColor, -10);
+          root.style.setProperty('--theme-icon-background', iconBackground);
 
           // 스크롤바 색상 설정
           root.style.setProperty('--theme-scrollbar-track', adjustOpacity(textColor, 0.05));
@@ -1478,6 +1488,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       root.style.setProperty('--theme-input-bg', 'rgba(255, 255, 255, 0.9)');
       root.style.setProperty('--theme-input-text', '#333333');
       root.style.setProperty('--theme-input-placeholder', '#666666');
+      root.style.setProperty('--theme-icon-background', '#f0f0f0');
       root.style.setProperty('--theme-button-bg', 'rgba(255, 255, 255, 0.1)');
       root.style.setProperty('--theme-button-hover', 'rgba(255, 255, 255, 0.2)');
       root.style.setProperty('--theme-icon-filter', 'none');
