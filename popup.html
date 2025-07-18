@@ -1,33 +1,355 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>탭 그룹 설정</title>
+    <title>TabNeat - Session Manager</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 10px;
-            width: 200px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .toggle-container {
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            width: 400px;
+            max-height: 600px;
+            background: #f8f9fa;
+            color: #333;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 15px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 500;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-            background: #f4f4f4;
-            border-radius: 5px;
+            gap: 8px;
         }
-        .toggle-label {
-            font-size: 14px;
+
+        .session-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .session-item {
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+        }
+
+        .session-item:last-child {
+            border-bottom: none;
+        }
+
+        .session-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .session-header {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .session-title {
+            font-weight: 500;
+            font-size: 13px;
+            color: #333;
+            flex: 1;
+        }
+
+        .session-info {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .session-time {
+            font-size: 10px;
+            color: #999;
+            margin-left: 10px;
+        }
+
+        .expand-icon {
+            font-size: 12px;
+            color: #666;
+            transition: transform 0.2s;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .session-content {
+            padding: 10px 15px;
+            background: #fafbfc;
+            display: none;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .session-content.expanded {
+            display: block;
+        }
+
+        .tabs-groups-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tabs-section, .groups-section {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 8px;
+            background: white;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tab-item, .group-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 6px;
+            border-radius: 3px;
+            margin-bottom: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 11px;
+        }
+
+        .tab-item:hover, .group-item:hover {
+            background: #e3f2fd;
+        }
+
+        .tab-favicon {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .tab-title {
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .group-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .group-title {
+            color: #333;
+            flex: 1;
+        }
+
+        .group-count {
+            font-size: 10px;
+            color: #666;
+            background: #e9ecef;
+            padding: 1px 4px;
+            border-radius: 8px;
+        }
+
+        .restore-buttons {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .restore-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.2s;
+        }
+
+        .restore-btn.primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .restore-btn.primary:hover {
+            background: #0056b3;
+        }
+
+        .restore-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .restore-btn.secondary:hover {
+            background: #5a6268;
+        }
+
+        .no-sessions {
+            text-align: center;
+            color: #6c757d;
+            font-size: 12px;
+            padding: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6c757d;
+            font-size: 12px;
+            padding: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+
+        .footer-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+        }
+
+        .footer-btn:hover {
+            color: #0056b3;
+        }
+
+        .notification {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+
+        .notification.success {
+            background: #28a745;
+            color: white;
+        }
+
+        .notification.error {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Color classes for groups */
+        .group-color-grey { background-color: #5F6368; }
+        .group-color-blue { background-color: #1A73E8; }
+        .group-color-red { background-color: #D93025; }
+        .group-color-yellow { background-color: #F9AB00; }
+        .group-color-green { background-color: #137333; }
+        .group-color-pink { background-color: #D01884; }
+        .group-color-purple { background-color: #9334E6; }
+        .group-color-cyan { background-color: #0891B2; }
+        .group-color-orange { background-color: #FA7B17; }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
     </style>
 </head>
 <body>
-    <h3>탭 정리 설정</h3>
-    <div class="toggle-container">
-        <span class="toggle-label">도메인별 탭 그룹화</span>
-        <input type="checkbox" id="groupTabsToggle">
+    <div class="header">
+        <h1>TabNeat</h1>
+        <p>Session Manager</p>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <div class="section-header">
+                <span>🔄 Recently Closed</span>
+            </div>
+            <div id="closedSessions" class="session-list">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <span>📁 Auto-Saved</span>
+            </div>
+            <div id="autoSavedSessions" class="session-list">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button class="footer-btn" id="openOptionsBtn">⚙️ Settings</button>
     </div>
 
     <script src="popup.js"></script>
