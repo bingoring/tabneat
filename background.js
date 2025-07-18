@@ -1550,10 +1550,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
-  if (request.action === "openChromeNewTab") {
-    // chrome://newtab/ 접근이 불가능하므로 Google 홈페이지로 이동
-    chrome.tabs.update(sender.tab.id, { url: 'https://www.google.com' });
-    sendResponse({ success: true });
+    if (request.action === "openChromeNewTab") {
+    // Google 홈페이지로 리다이렉트 (안정적이고 간단함)
+    chrome.tabs.update(sender.tab.id, { url: 'https://www.google.com' })
+      .then(() => {
+        console.log('Successfully redirected to Google homepage');
+        sendResponse({ success: true });
+      })
+      .catch(error => {
+        console.error('Error redirecting to Google:', error);
+        // 최종 fallback
+        chrome.tabs.update(sender.tab.id, { url: 'about:blank' })
+          .then(() => sendResponse({ success: true }))
+          .catch(() => sendResponse({ success: false }));
+      });
     return true;
   }
 
@@ -1676,8 +1686,15 @@ async function clearAllSessions(type) {
 // ============== Extension Initialization ==============
 
 // 확장 프로그램 시작 시 설정 로드
-async function loadAutoSaveSettings() {
+async function loadAutoSaveSettings(retryCount = 0) {
+  const maxRetries = 3;
+
   try {
+    // Chrome runtime이 준비되었는지 확인
+    if (!chrome.storage || !chrome.storage.sync) {
+      throw new Error("Chrome storage not available");
+    }
+
     const settings = await chrome.storage.sync.get([
       'autoSaveEnabled',
       'autoSaveTrigger',
@@ -1700,6 +1717,24 @@ async function loadAutoSaveSettings() {
     startAutoSave();
   } catch (error) {
     console.error("Error loading auto save settings:", error);
+
+    // 재시도 로직
+    if (retryCount < maxRetries) {
+      console.log(`Retrying to load auto save settings (${retryCount + 1}/${maxRetries})`);
+      setTimeout(() => {
+        loadAutoSaveSettings(retryCount + 1);
+      }, 1000 * (retryCount + 1)); // 1초, 2초, 3초 후 재시도
+    } else {
+      console.error("Failed to load auto save settings after all retries, using defaults");
+      // 기본값으로 설정
+      autoSaveSettings.enabled = true;
+      autoSaveSettings.trigger = "time";
+      autoSaveSettings.interval = 60;
+      autoSaveSettings.detectTabClose = true;
+      autoSaveSettings.detectTabCreate = true;
+      autoSaveSettings.detectUrlChange = true;
+      startAutoSave();
+    }
   }
 }
 
@@ -1712,5 +1747,7 @@ chrome.runtime.onInstalled.addListener(() => {
   loadAutoSaveSettings();
 });
 
-// 즉시 설정 로드 (서비스 워커 재시작 시)
-loadAutoSaveSettings();
+// 지연된 설정 로드 (서비스 워커 재시작 시)
+setTimeout(() => {
+  loadAutoSaveSettings();
+}, 100); // 100ms 지연
