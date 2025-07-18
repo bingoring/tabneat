@@ -187,6 +187,158 @@
         .reset-btn:hover {
             background-color: #5a6268;
         }
+
+        /* Auto Save Options Styles */
+        .auto-save-trigger-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin: 10px 0;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+            accent-color: #007bff;
+        }
+
+        .radio-label {
+            color: #333;
+        }
+
+        .time-interval-section, .change-detection-section {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .interval-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .interval-select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+        .change-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .checkbox-option input[type="checkbox"] {
+            margin: 0;
+            accent-color: #007bff;
+        }
+
+        .checkbox-label {
+            color: #555;
+        }
+
+
+
+
+
+        .action-btn {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            background-color: white;
+            color: #666;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .action-btn.restore {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .action-btn.restore:hover {
+            background-color: #218838;
+        }
+
+        .action-btn.delete {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .action-btn.delete:hover {
+            background-color: #c82333;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -208,6 +360,14 @@
               <span class="toggle-slider"></span>
           </label>
       </div>
+
+        <div class="toggle-container">
+            <span class="toggle-label">Override New Tab Page</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="newTabOverrideToggle" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
 
         <div class="option-section">
             <h3>Sort Options</h3>
@@ -232,6 +392,79 @@
                     <!-- Domain list will be dynamically added here -->
                 </div>
                 <button id="resetCustomOrder" class="reset-btn">Reset to Default Order</button>
+            </div>
+        </div>
+
+        <div class="option-section">
+            <h3>Auto Session Save</h3>
+
+            <div class="toggle-container">
+                <span class="toggle-label">Enable Auto Save</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="autoSaveToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-container">
+                <span class="toggle-label">Save All Windows</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="autoSaveAllWindowsToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="auto-save-trigger-section">
+                <h4 style="margin: 20px 0 10px 0; font-size: 14px; color: #333;">Auto Save Trigger</h4>
+
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="autoSaveTrigger" value="time" id="timeTrigger" checked>
+                        <span class="radio-label">⏱️ Time-based</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="autoSaveTrigger" value="change" id="changeTrigger">
+                        <span class="radio-label">🔄 When changes occur</span>
+                    </label>
+                </div>
+
+                <div id="timeIntervalSection" class="time-interval-section">
+                    <h5 style="margin: 15px 0 8px 0; font-size: 13px; color: #555;">Save Interval</h5>
+                    <select id="autoSaveInterval" class="interval-select">
+                        <option value="10">10 seconds</option>
+                        <option value="30">30 seconds</option>
+                        <option value="60" selected>1 minute</option>
+                        <option value="1800">30 minutes</option>
+                        <option value="3600">1 hour</option>
+                    </select>
+                </div>
+
+                <div id="changeDetectionSection" class="change-detection-section" style="display: none;">
+                    <h5 style="margin: 15px 0 8px 0; font-size: 13px; color: #555;">Detect Changes</h5>
+                    <div class="change-options">
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="detectTabClose" checked>
+                            <span class="checkbox-label">Tab closed</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="detectTabCreate" checked>
+                            <span class="checkbox-label">New tab navigation</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="detectUrlChange" checked>
+                            <span class="checkbox-label">URL/domain change</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auto-save-info">
+                <p style="font-size: 12px; color: #666; margin: 10px 0;">
+                    📁 Auto-saved sessions are stored separately and accessible from new tabs
+                </p>
+                <p style="font-size: 12px; color: #666; margin: 10px 0;">
+                    🔄 Sessions are automatically saved based on your selected trigger
+                </p>
             </div>
         </div>
 

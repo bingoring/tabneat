@@ -1,15 +1,65 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const groupTabsToggle = document.getElementById("groupTabsToggle");
   const collapseGroupsToggle = document.getElementById("collapseGroupsToggle");
+  const newTabOverrideToggle = document.getElementById("newTabOverrideToggle");
   const sortOptions = document.querySelectorAll('input[name="sortOrder"]');
   const customOrderSection = document.getElementById("customOrderSection");
   const domainList = document.getElementById("domainList");
   const resetCustomOrderBtn = document.getElementById("resetCustomOrder");
 
+  // Auto Session Save Elements
+  const autoSaveToggle = document.getElementById("autoSaveToggle");
+  const autoSaveAllWindowsToggle = document.getElementById("autoSaveAllWindowsToggle");
+  const timeTrigger = document.getElementById("timeTrigger");
+  const changeTrigger = document.getElementById("changeTrigger");
+  const autoSaveInterval = document.getElementById("autoSaveInterval");
+  const timeIntervalSection = document.getElementById("timeIntervalSection");
+  const changeDetectionSection = document.getElementById("changeDetectionSection");
+  const detectTabClose = document.getElementById("detectTabClose");
+  const detectTabCreate = document.getElementById("detectTabCreate");
+  const detectUrlChange = document.getElementById("detectUrlChange");
+
   // 저장된 설정 불러오기
-  chrome.storage.sync.get(["groupTabs", "collapseGroups", "sortOrder", "customDomainOrder"], (data) => {
+  chrome.storage.sync.get([
+    "groupTabs",
+    "collapseGroups",
+    "newTabOverride",
+    "sortOrder",
+    "customDomainOrder",
+    "autoSaveEnabled",
+    "autoSaveAllWindows",
+    "autoSaveTrigger",
+    "autoSaveInterval",
+    "detectTabClose",
+    "detectTabCreate",
+    "detectUrlChange"
+  ], (data) => {
       groupTabsToggle.checked = data.groupTabs ?? true;
       collapseGroupsToggle.checked = data.collapseGroups ?? false;
+      newTabOverrideToggle.checked = data.newTabOverride ?? true;
+
+      // Auto Session Save 설정
+      autoSaveToggle.checked = data.autoSaveEnabled ?? true;
+      autoSaveAllWindowsToggle.checked = data.autoSaveAllWindows ?? false;
+
+      // Auto Save Trigger 설정
+      const trigger = data.autoSaveTrigger ?? "time";
+      if (trigger === "time") {
+        timeTrigger.checked = true;
+      } else {
+        changeTrigger.checked = true;
+      }
+
+      // Auto Save Interval 설정
+      autoSaveInterval.value = data.autoSaveInterval ?? 60;
+
+      // Change Detection 설정
+      detectTabClose.checked = data.detectTabClose ?? true;
+      detectTabCreate.checked = data.detectTabCreate ?? true;
+      detectUrlChange.checked = data.detectUrlChange ?? true;
+
+      // 섹션 표시/숨김
+      toggleTriggerSections(trigger);
 
       // 정렬 옵션 설정 (기본값: alphabetical)
       const sortOrder = data.sortOrder ?? "alphabetical";
@@ -27,6 +77,90 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   });
 
+
+
+  // Auto Session Save Event Listeners
+  autoSaveToggle.addEventListener("change", () => {
+      const enabled = autoSaveToggle.checked;
+      chrome.storage.sync.set({ autoSaveEnabled: enabled });
+      chrome.runtime.sendMessage({ action: "toggleAutoSave", enabled });
+  });
+
+  autoSaveAllWindowsToggle.addEventListener("change", () => {
+      chrome.storage.sync.set({ autoSaveAllWindows: autoSaveAllWindowsToggle.checked });
+  });
+
+  // Auto Save Trigger Event Listeners
+  timeTrigger.addEventListener("change", () => {
+    if (timeTrigger.checked) {
+      chrome.storage.sync.set({ autoSaveTrigger: "time" });
+      toggleTriggerSections("time");
+      chrome.runtime.sendMessage({
+        action: "updateAutoSaveSettings",
+        trigger: "time",
+        interval: parseInt(autoSaveInterval.value)
+      });
+    }
+  });
+
+  changeTrigger.addEventListener("change", () => {
+    if (changeTrigger.checked) {
+      chrome.storage.sync.set({ autoSaveTrigger: "change" });
+      toggleTriggerSections("change");
+      chrome.runtime.sendMessage({
+        action: "updateAutoSaveSettings",
+        trigger: "change",
+        detectTabClose: detectTabClose.checked,
+        detectTabCreate: detectTabCreate.checked,
+        detectUrlChange: detectUrlChange.checked
+      });
+    }
+  });
+
+  autoSaveInterval.addEventListener("change", () => {
+    const interval = parseInt(autoSaveInterval.value);
+    chrome.storage.sync.set({ autoSaveInterval: interval });
+    if (timeTrigger.checked) {
+      chrome.runtime.sendMessage({
+        action: "updateAutoSaveSettings",
+        trigger: "time",
+        interval: interval
+      });
+    }
+  });
+
+  // Change Detection Event Listeners
+  [detectTabClose, detectTabCreate, detectUrlChange].forEach(checkbox => {
+    checkbox.addEventListener("change", () => {
+      chrome.storage.sync.set({
+        detectTabClose: detectTabClose.checked,
+        detectTabCreate: detectTabCreate.checked,
+        detectUrlChange: detectUrlChange.checked
+      });
+
+      if (changeTrigger.checked) {
+        chrome.runtime.sendMessage({
+          action: "updateAutoSaveSettings",
+          trigger: "change",
+          detectTabClose: detectTabClose.checked,
+          detectTabCreate: detectTabCreate.checked,
+          detectUrlChange: detectUrlChange.checked
+        });
+      }
+    });
+  });
+
+  // Trigger Sections Toggle Function
+  function toggleTriggerSections(trigger) {
+    if (trigger === "time") {
+      timeIntervalSection.style.display = "block";
+      changeDetectionSection.style.display = "none";
+    } else {
+      timeIntervalSection.style.display = "none";
+      changeDetectionSection.style.display = "block";
+    }
+  }
+
   // 기본 토글 변경 시 저장
   groupTabsToggle.addEventListener("change", () => {
       chrome.storage.sync.set({ groupTabs: groupTabsToggle.checked });
@@ -34,6 +168,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   collapseGroupsToggle.addEventListener("change", () => {
       chrome.storage.sync.set({ collapseGroups: collapseGroupsToggle.checked });
+  });
+
+  newTabOverrideToggle.addEventListener("change", () => {
+      const enabled = newTabOverrideToggle.checked;
+      chrome.storage.sync.set({ newTabOverride: enabled });
+      chrome.runtime.sendMessage({ action: "toggleNewTabOverride", enabled });
   });
 
   // 정렬 옵션 변경 시 저장
@@ -56,6 +196,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       chrome.storage.sync.set({ customDomainOrder: [] });
       loadCurrentDomains();
   });
+
+
+
+  function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+  }
+
+
+
+    // 세션 액션 핸들러 함수
+
 
   // 사용자 지정 순서 섹션 표시/숨김
   function toggleCustomOrderSection(show) {
