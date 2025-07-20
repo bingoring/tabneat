@@ -5,7 +5,7 @@
   "main": "background.js",
   "scripts": {
     "build": "npm run package",
-    "package": "zip -r tabneat.zip . -x '*.git*' '*.github*' 'node_modules/*' 'package*.json' 'README.md' '*.DS_Store'",
+    "package": "zip -r tabneat.zip . -x '*.git*' '*.github*' 'node_modules/*' '*.DS_Store'",
     "deploy": "chrome-webstore-upload upload --source tabneat.zip --extension-id $EXTENSION_ID --client-id $CLIENT_ID --client-secret $CLIENT_SECRET --refresh-token $REFRESH_TOKEN --auto-publish"
   },
   "keywords": [
