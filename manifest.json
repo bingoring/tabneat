@@ -8,7 +8,8 @@
     "tabs",
     "storage",
     "tabGroups",
-    "system.display"
+    "system.display",
+    "topSites"
   ],
   "chrome_url_overrides": {
     "newtab": "newtab.html"
