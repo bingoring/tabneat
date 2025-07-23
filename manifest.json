@@ -4,16 +4,10 @@
   "version": "1.4.0",
   "description": "Automatically sorts and groups your tabs by domain for a cleaner browser experience",
   "permissions": [
-    "offscreen",
     "tabs",
     "storage",
-    "tabGroups",
-    "system.display",
-    "topSites"
+    "tabGroups"
   ],
-  "chrome_url_overrides": {
-    "newtab": "newtab.html"
-  },
   "background": {
     "service_worker": "background.js"
   },
@@ -32,43 +26,5 @@
       "128": "icons/icon-128.png"
     }
   },
-  "options_page": "options.html",
-  "host_permissions": [
-      "https://www.google.com/*",
-      "https://t0.gstatic.com/*",
-      "https://t1.gstatic.com/*",
-      "https://t2.gstatic.com/*",
-      "https://t3.gstatic.com/*",
-      "https://favicon.yandex.net/*",
-      "https://icons.duckduckgo.com/*",
-      "https://api.allorigins.win/*",
-      "https://suggestqueries.google.com/*",
-      "https://clients1.google.com/*"
-  ],
-  "commands": {
-    "resize-left": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Left"
-      },
-      "description": "Move window to the left"
-    },
-    "resize-right": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Right"
-      },
-      "description": "Move window to the right"
-    },
-    "resize-up": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Up"
-      },
-      "description": "Move window to the top"
-    },
-    "resize-down": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Down"
-      },
-      "description": "Move window to the bottom"
-    }
-  }
+  "options_page": "options.html"
 }
