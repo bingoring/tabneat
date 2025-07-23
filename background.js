@@ -194,17 +194,42 @@ async function performTabSorting() {
 
     let index = 0;
 
-    // 모든 탭 정렬 실행
+    // 모든 탭 정렬 실행 (순차적으로 이동)
     for (const domain of sortedDomains) {
       const tabArray = domainMap.get(domain);
-      await Promise.all(tabArray.map(tab =>
-        chrome.tabs.move(tab.id, { index: index++ })
-      ));
+
+      // 각 도메인 내에서도 탭을 정렬 (recent 정렬의 경우 최근 접속 순으로)
+      if (sortSettings.sortOrder === 'recent') {
+        tabArray.sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0));
+      }
+
+      // 탭들을 순차적으로 이동 (동시 이동으로 인한 충돌 방지)
+      for (const tab of tabArray) {
+        await chrome.tabs.move(tab.id, { index: index++ });
+      }
     }
 
     // 그룹화 실행 (옵션이 활성화된 경우)
     if (groupTabs) {
       console.log('Starting intelligent grouping process...');
+
+      // 탭 이동 완료 후 잠시 대기 (Chrome 내부 처리 시간 확보)
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 최신 탭 정보 다시 가져오기 (이동 후 정보 갱신)
+      const updatedTabs = await chrome.tabs.query({
+        windowId: tabs[0].windowId
+      });
+
+      // 도메인별 탭 맵 다시 구성
+      const updatedDomainMap = new Map();
+      for (const tab of updatedTabs) {
+        const domain = getCleanDomainName(tab.url);
+        if (!updatedDomainMap.has(domain)) {
+          updatedDomainMap.set(domain, []);
+        }
+        updatedDomainMap.get(domain).push(tab);
+      }
 
       // 1. 현재 모든 그룹 정보 수집
       const currentGroups = await chrome.tabGroups.query({ windowId: tabs[0].windowId });
@@ -220,9 +245,9 @@ async function performTabSorting() {
 
       // 2. 각 도메인별로 스마트 그룹화 처리
       for (const domain of sortedDomains) {
-        const tabArray = domainMap.get(domain);
+        const tabArray = updatedDomainMap.get(domain);
 
-        if (tabArray.length < 2) {
+        if (!tabArray || tabArray.length < 2) {
           continue;
         }
 
