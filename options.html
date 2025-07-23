@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TabNeat Settings</title>
+    <script src="theme-init.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,10 +14,59 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
-            background: #ffffff;
-            color: #37352f;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.5;
             font-size: 14px;
+        }
+
+        /* 페이지 로드 완료 후 transition 적용 */
+        body.loaded {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.loaded .property-group,
+        body.loaded .property-item,
+        body.loaded .notion-toggle {
+            transition: all 0.2s ease;
+        }
+
+        body.loaded .property-item:hover {
+            transition: background-color 0.1s ease;
+        }
+
+        body.loaded .radio-option:hover {
+            transition: background-color 0.1s ease;
+        }
+
+        /* Light Theme Variables (Default) */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f6f3;
+            --bg-tertiary: #ffffff;
+            --text-primary: #37352f;
+            --text-secondary: #787774;
+            --border-light: #e9e9e7;
+            --border-medium: #f7f6f3;
+            --accent-color: #0f7b0f;
+            --accent-hover: #0d6b0d;
+            --shadow-light: rgba(0, 0, 0, 0.04);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Dark Theme Variables */
+        [data-theme="dark"] {
+            --bg-primary: #191919;
+            --bg-secondary: #2f2f2f;
+            --bg-tertiary: #252525;
+            --text-primary: #e9e9e7;
+            --text-secondary: #9b9a97;
+            --border-light: #373737;
+            --border-medium: #2d2d2d;
+            --accent-color: #4ade80;
+            --accent-hover: #22c55e;
+            --shadow-light: rgba(0, 0, 0, 0.2);
+            --shadow-medium: rgba(0, 0, 0, 0.3);
         }
 
         .main-container {
@@ -33,14 +83,14 @@
         .header h1 {
             font-size: 32px;
             font-weight: 700;
-            color: #37352f;
+            color: var(--text-primary);
             margin-bottom: 8px;
             letter-spacing: -0.02em;
         }
 
         .header .subtitle {
             font-size: 16px;
-            color: #787774;
+            color: var(--text-secondary);
             font-weight: 400;
         }
 
@@ -51,7 +101,7 @@
         .section-title {
             font-size: 20px;
             font-weight: 600;
-            color: #37352f;
+            color: var(--text-primary);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -59,19 +109,19 @@
         }
 
         .property-group {
-            border: 1px solid #e9e9e7;
+            border: 1px solid var(--border-light);
             border-radius: 8px;
-            background: #ffffff;
+            background: var(--bg-tertiary);
             overflow: hidden;
+            box-shadow: 0 2px 4px var(--shadow-light);
         }
 
         .property-item {
             padding: 16px 20px;
-            border-bottom: 1px solid #f7f6f3;
+            border-bottom: 1px solid var(--border-medium);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: background-color 0.1s ease;
             cursor: pointer;
             min-height: 60px;
         }
@@ -81,7 +131,7 @@
         }
 
         .property-item:hover {
-            background: #f7f6f3;
+            background: var(--bg-secondary);
         }
 
         .property-content {
@@ -98,7 +148,7 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            color: #787774;
+            color: var(--text-secondary);
         }
 
         .property-info {
@@ -108,13 +158,13 @@
         .property-name {
             font-size: 14px;
             font-weight: 500;
-            color: #37352f;
+            color: var(--text-primary);
             margin-bottom: 2px;
         }
 
         .property-description {
             font-size: 12px;
-            color: #787774;
+            color: var(--text-secondary);
             line-height: 1.4;
         }
 
@@ -127,16 +177,15 @@
             position: relative;
             width: 36px;
             height: 20px;
-            background: #e9e9e7;
+            background: var(--border-light);
             border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s ease;
             border: none;
             outline: none;
         }
 
         .notion-toggle.active {
-            background: #0f7b0f;
+            background: var(--accent-color);
         }
 
         .notion-toggle::after {
@@ -169,8 +218,7 @@
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            transition: background-color 0.1s ease;
-            border-bottom: 1px solid #f7f6f3;
+            border-bottom: 1px solid var(--border-medium);
         }
 
         .radio-option:last-child {
@@ -178,25 +226,25 @@
         }
 
         .radio-option:hover {
-            background: #f7f6f3;
+            background: var(--bg-secondary);
         }
 
         .radio-option input[type="radio"] {
             margin: 0;
             width: 16px;
             height: 16px;
-            accent-color: #0f7b0f;
+            accent-color: var(--accent-color);
         }
 
         .radio-label {
             font-size: 14px;
-            color: #37352f;
+            color: var(--text-primary);
             font-weight: 400;
         }
 
         .radio-description {
             font-size: 12px;
-            color: #787774;
+            color: var(--text-secondary);
             margin-left: 28px;
             margin-top: 4px;
         }
@@ -210,7 +258,7 @@
         }
 
         .sort-section .property-item:hover {
-            background: #ffffff;
+            background: var(--bg-tertiary);
         }
 
         .sort-header {
@@ -225,18 +273,21 @@
             position: fixed;
             top: 24px;
             right: 24px;
-            background: #37352f;
-            color: white;
+            background: var(--text-primary);
+            color: var(--bg-primary);
             padding: 12px 16px;
             border-radius: 6px;
             font-size: 14px;
             font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px var(--shadow-medium);
             z-index: 1000;
             opacity: 0;
             transform: translateX(100%);
-            transition: all 0.3s ease;
             max-width: 320px;
+        }
+
+        body.loaded .notification {
+            transition: all 0.3s ease;
         }
 
         .notification.show {
@@ -245,17 +296,19 @@
         }
 
         .notification.success {
-            background: #0f7b0f;
+            background: var(--accent-color);
+            color: white;
         }
 
         .notification.error {
             background: #eb5757;
+            color: white;
         }
 
         /* Divider */
         .divider {
             height: 1px;
-            background: #e9e9e7;
+            background: var(--border-light);
             margin: 32px 0;
         }
 
@@ -263,14 +316,14 @@
         .footer {
             margin-top: 64px;
             text-align: center;
-            color: #787774;
+            color: var(--text-secondary);
             font-size: 12px;
             padding: 24px 0;
-            border-top: 1px solid #f7f6f3;
+            border-top: 1px solid var(--border-medium);
         }
 
         .footer a {
-            color: #0f7b0f;
+            color: var(--accent-color);
             text-decoration: none;
         }
 
@@ -290,10 +343,49 @@
 
             .property-item {
                 padding: 16px;
+                min-height: 50px;
             }
 
             .sort-section .property-item {
                 padding: 16px;
+            }
+
+            .notification {
+                top: 16px;
+                right: 16px;
+                left: 16px;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header .subtitle {
+                font-size: 14px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .property-item {
+                padding: 12px 16px;
+                min-height: 44px;
+            }
+
+            .sort-section .property-item {
+                padding: 16px;
+            }
+
+            .footer {
+                margin-top: 48px;
             }
         }
     </style>
@@ -368,16 +460,16 @@
                         <div class="radio-description">Sort domains alphabetically from A to Z</div>
 
                         <label class="radio-option">
+                            <input type="radio" name="sortOrder" value="recent" id="recent">
+                            <span class="radio-label">Recent activity</span>
+                        </label>
+                        <div class="radio-description">Recently accessed domains appear first</div>
+
+                        <label class="radio-option">
                             <input type="radio" name="sortOrder" value="tabCount" id="tabCount">
                             <span class="radio-label">By tab count</span>
                         </label>
                         <div class="radio-description">Domains with more tabs appear first</div>
-
-                        <label class="radio-option">
-                            <input type="radio" name="sortOrder" value="custom" id="custom" disabled>
-                            <span class="radio-label">Custom order</span>
-                        </label>
-                        <div class="radio-description">Manually arrange domains (coming soon)</div>
                     </div>
                 </div>
             </div>

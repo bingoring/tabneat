@@ -67,6 +67,19 @@ function sortDomains(domainMap, sortOrder, customOrder = []) {
     case 'tabCount':
       return domains.sort((a, b) => domainMap.get(b).length - domainMap.get(a).length);
 
+    case 'recent':
+      return domains.sort((a, b) => {
+        const aTabs = domainMap.get(a);
+        const bTabs = domainMap.get(b);
+
+        // 각 도메인에서 가장 최근에 접속한 탭의 시간 찾기
+        const aLatest = Math.max(...aTabs.map(tab => tab.lastAccessed || 0));
+        const bLatest = Math.max(...bTabs.map(tab => tab.lastAccessed || 0));
+
+        // 최근 접속 시간이 늦은 것부터 정렬 (내림차순)
+        return bLatest - aLatest;
+      });
+
     case 'custom':
       const customSet = new Set(customOrder);
       const customDomains = customOrder.filter(domain => domains.includes(domain));
